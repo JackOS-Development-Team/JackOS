@@ -1,0 +1,10 @@
+class kernel {
+	function void kernel(){
+		
+		do UART.init();
+		do GPIO.init();
+		do Shell.init();
+		do Shell.run();
+		return;
+	}
+}

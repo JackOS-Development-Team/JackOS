@@ -1,0 +1,62 @@
+class shLanguageFunctions {
+	
+	/**
+		This is the file for the shell language functions
+	*/
+	
+	
+	
+	//code startes here
+	static Array vars;
+	static Array RAM;
+	static int A;
+	static int B;
+	static int C;
+	static int D;
+	
+	function init(){
+		let vars = Array.new(256);
+		let RAM = Array.new(512);
+		let A = 0;
+		let B = 0;
+		let C = 0;
+		let D = 0;
+	}
+	
+	function void print(String message){
+		do Output.printString(message);
+		return;
+	}
+	
+	function void define(int loc, int data) {
+		let vars[loc] = data;
+	}
+	function void getVar(int loc) {
+		do Output.printInt(vars[loc]);
+	}
+	
+	function void dumRegs() {
+		do Output.printInt(A);
+		do Output.printInt(B);
+		do Output.printInt(C);
+		do Output.printInt(D);
+	}
+	
+	function void peekMem(int loc) {
+		do Output.printInt(RAM[loc]);
+	}
+	
+	function void pokeMem(int loc, int data) {
+		let RAM[loc] = data;
+	}
+	/**
+	function void peekReg(int reg, int data) {
+		
+	}
+	*/
+	
+	function void stop() {
+		do vars.dispose();
+		do RAM.dispose();
+	}
+}

@@ -1,0 +1,56 @@
+class ProgramManager {
+	
+	
+	function void Main {
+		var char c, key;
+    	var String s;
+    	var boolean ok;
+
+        
+        do Output.printString("Available programs: ");
+        do Output.println();
+
+        // List of commands:
+        do Output.printString("vim");
+        do Output.println();
+		do Output.printString("chip8");
+        do Output.println();
+		do Output.printString("programs");
+        do Output.println();
+        do Output.println();
+        
+        
+		while (true) {
+            let s = Keyboard.readLine("progs> "); //the prompt
+
+            if (String.compare(s,"programs") = 0) {
+				do Output.printString("Available programs: ");
+                do Output.println();
+
+                // List of commands:
+                // do Output.printString("vim");
+                do Output.println();
+				do Output.printString("chip8");
+        		do Output.println();
+                do Output.println();
+            }
+
+            //else if (String.compare(s,"ate") = 0) {
+			//	do ate.main();
+            //}
+			
+			else if (String.compare(s, "chip8") = 0) {
+                do Chip8.main();
+            }
+ 
+		
+			else {
+				do Output.printString("ERROR: Command not found.");
+			}
+
+				do Output.println();
+			}	
+
+			return;
+		}
+}

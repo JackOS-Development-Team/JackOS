@@ -1,0 +1,93 @@
+class File {
+	static DiskArray fh;
+	static String currentDir;
+	
+	function void init(){
+		let fh = 524288;
+		let currentDir = String.new(20);
+		do currentDir.append("/");
+	}
+	
+	function Array dumpfh() {
+		var Array temp;
+		var int i;
+		let i = 0;
+		
+		let temp = Array.new(fh.size());
+		
+		while (i < 16348) {
+			let temp[i] = fh[i];
+		}
+		
+		return temp;
+	}
+	
+	function void list() {
+		var int temp;
+		var int i;
+		var int x;
+		var int loc;
+		var String tempx;
+		var Array data;
+		var int y;
+		
+		let y = 0;
+		let x = 0;
+		let i = 0;
+		let temp = 0;
+		let tempx = String.new(16);
+		
+		
+		if (String.compare(currentDir, "/") == 0) {
+			let x = 0;
+			let i = 0;
+			
+			while (~(y < 16384)) {
+				while (~(i == 15)) {
+					do Output.printChar(data[i + x]);
+				}
+				
+				let x = x + 5;
+			
+		}
+		else {
+			while (~(String.compare(tempx, returnDir()) == 0)) {
+				while (y < 16){
+					do tempx.setCharAt(i, fh[i]);
+					}
+					let i = i + 19;
+					let x = x + 19;
+			}
+			let loc = fh[x-1];
+			
+			let data = Disk.getBlock(loc, loc + 16384);
+			let x = 0;
+			let i = 0;
+			
+			while (~(y < 16384)) {
+				while (~(i == 15)) {
+					do Output.printChar(data[i + x]);
+				}
+				
+				let x = x + 5;
+			}
+		}
+		
+		return;
+	}
+	
+	function void cd(String dir) {
+		let currentDir = dir;
+		return;
+	}
+	
+	function String pwd() {
+		do Output.printString(currentDir);
+		return currentDir;
+	}
+	
+	function String returnDir() {
+		return currentDir;
+	}
+	
+}

@@ -1,0 +1,178 @@
+class BinFile {
+	
+	/** creates a .bin file */
+	function boolean create(String name, boolean writing){
+		var Array metadata;
+		var String n;
+		var boolean w;
+		var int temp;
+		var int i;
+		var Array data;
+		var int buff;
+		var String tempx;
+		var int loc;
+		var int x;
+		var int y;
+		
+		let tempx = String.new(20);
+		let buff = 0;
+		let data = Array.new(8192)
+		let i = 0;
+		let x = 0;
+		let y = 0;
+		
+		let n = String.new(16);
+		let w = writing;
+		do n.appendString(name);
+		let metadata = Array.new(20);
+		
+		//finds the location of the current directory
+		while (~(String.compare(tempx, returnDir()) == 0)) {
+			
+			while (y < 16){
+				do tempx.setCharAt(i, fh[i]);
+			}
+			let i = i + 19;
+			let x = x + 19;
+		}
+		let loc = fh[x-1];
+		
+		let i = 0;
+		while (i < n.length) {
+			let temp = n.charAt(i);
+			let metadata[i] = temp;
+		}
+		
+		let metadata[17] = 1;
+		let metadata[18] = 8192;
+		let metadata[19] = loc + Math.multiply(16384, numoffiles);
+		let metadata[20] = 65535; //magic number, if anything else, file is 
+		// corrupt(jk its just some B.S i put here because i felt like it)
+		let i = 0;
+		
+		while (i < 20) {
+			let fh[numoffiles * 20 + i] = metadata[i];
+			let i = i + 1;
+		}
+		
+		let numoffiles += 1;
+		
+		//dispose of all this crap because memory leaks
+		do metadata.dispose();
+		do n.dispose();
+		do data.dispose();
+		do tempx.dispose();
+		
+		return true;
+	}
+	
+	function boolean delete(String fileName) {
+		var String temp;
+		var int place;
+		var int loc;
+		var int x;
+		var int i;
+		
+		let i = 0;
+		let place = 0;
+		let temp = String.new(20);
+		
+		while (~(String.compare(temp, fileName) == 0)) {
+			do temp.setCharAt(i, fh[i]);
+			let i = i + 19;
+			let x = x + 19;
+		}
+		
+		let loc = fh[x-1];
+		do Disk.delete(loc, loc+8192);
+		return;
+		
+	}
+	
+	function boolean write(String name, Array data) {
+		var String temp;
+		var int place;
+		var int loc;
+		var int x;
+		var int i;
+		var Array d;
+		let d = Array.new(data.size);
+		
+		let i = 0;
+		let place = 0;
+		let temp = String.new(20);
+		
+		while (~(String.compare(temp, fileName) == 0)) {
+			do temp.setCharAt(i, fh[i]);
+			let i = i + 19;
+			let x = x + 19;
+		}
+		
+		let loc = fh[x-1];
+		do Disk.save(data, loc, loc+8192);
+		return;
+	}
+	
+	function void printRaw(String fname) {
+		var String temp;
+		var Array y;
+		var int place;
+		var int loc;
+		var int x;
+		var int i;
+		
+		let i = 0;
+		let place = 0;
+		let temp = String.new(20);
+		let y = Array.new(16384);
+		
+		while (~(String.compare(temp, fileName) == 0)) {
+			do temp.setCharAt(i, fh[i]);
+			let i = i + 19;
+			let x = x + 19;
+		}
+		let loc = fh[x-1];
+		
+		let i = 0;
+		
+		while (i < 16384) {
+			let temp[i] = fh[loc];
+		}
+		
+		let i = 0;
+		while (i < 16384) {
+			do Output.printInt(temp[i]);
+		}
+	}
+	
+	function boolean load(String fname, int addr) {
+		var String temp;
+		var Array y;
+		var int place;
+		var int loc;
+		var int end;
+		var int x;
+		var int i;
+		
+		let i = 0;
+		let place = 0;
+		let temp = String.new(20);
+		let y = Array.new(16384);
+		
+		while (~(String.compare(temp, fileName) == 0)) {
+			do temp.setCharAt(i, fh[i]);
+			let i = i + 19;
+			let x = x + 19;
+		}
+		let loc = fh[x-1];
+		let end = loc + 16384;
+		
+		let i = loc;
+		
+		while (i < end) {
+			do Memory.poke(addr, Disk.peek(i);
+			let i = i + 1;
+		}
+	}
+	
+} 
