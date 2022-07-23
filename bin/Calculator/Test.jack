@@ -1,0 +1,56 @@
+/**
+ * Just some tests to validate calculations
+ */
+class Test {
+
+    function void eval(String e) {
+        var Calculator calculator;
+        var Decimal32 result;
+        var String s;
+        let calculator = Calculator.new();
+        do calculator.update(e);
+        do Output.printString(e);
+        do Output.printString(" = ");
+        if (calculator.error()) {
+            do Output.printString("ERR");
+        } else {
+            let result = calculator.currentValue();
+            let s = String.new(14);
+            do result.format(s);
+            do Output.printString(s);
+            do s.dispose();
+        }
+        do Output.println();
+        return;       
+    }
+
+    function void test() {
+        //do Test.eval("0");
+        do Test.eval("1");
+        do Test.eval("10");
+        do Test.eval("1024");
+        do Test.eval("12.5");
+        do Test.eval(".5");
+        do Test.eval("-1");
+        do Test.eval("00000000001024.1");
+        do Test.eval("1024.375");
+        do Test.eval(".001");
+        do Test.eval("0.001");
+        do Test.eval("-.001");
+        do Test.eval("1/2");
+        do Test.eval("1/.02");
+        do Test.eval("-.001 * 100");
+        do Test.eval("1 + 2");
+        do Test.eval("1 - 2");
+        do Test.eval("1 / 2");
+        do Test.eval("-1 / 2");
+        do Test.eval("-1 - -2");
+        do Test.eval("-1 / -2");
+        do Test.eval("-1 - (-2)");
+        do Test.eval("-1 / (-2)");
+        do Test.eval("2 + 3 * 4");
+        do Test.eval("2 + (3 * 4)");
+        return;
+    }
+
+}

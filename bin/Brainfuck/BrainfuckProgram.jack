@@ -1,0 +1,29 @@
+class BrainfuckProgram {
+    field int interval_, numCells_;
+    field String code_;
+
+    constructor BrainfuckProgram new(int interval, int numCells, String code) {
+        let interval_ = interval;
+        let numCells_ = numCells;
+        let code_ = code;
+        return this;
+    }
+
+    method void dispose() {
+        do code_.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method int interval() {
+        return interval_;
+    }
+
+    method int numCells() {
+        return numCells_;
+    }
+
+    method String code() {
+        return code_;
+    }
+}

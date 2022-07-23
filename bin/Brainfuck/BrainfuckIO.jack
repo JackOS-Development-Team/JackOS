@@ -1,0 +1,81 @@
+/// This class manages I/O.
+class BrainfuckIO {
+    field int outputRowBase_, outputRow_, outputColumn_;
+    field String prompt_;
+
+    constructor BrainfuckIO new(int outputRow) {
+        let outputRowBase_ = outputRow;
+        let outputRow_ = outputRow;
+        let outputColumn_ = 0;
+        let prompt_ = "Please input a character: ";
+        return this;
+    }
+
+    method void dispose() {
+        do prompt_.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /// Read a single character from the keyboard device.
+    method char readChar() {
+        var char c;
+        do BrainfuckIO.clearRow(22);
+        do Output.moveCursor(22, 0);
+        do Output.printString(prompt_);
+        let c = Keyboard.readChar();
+        do Sys.wait(500);
+        return c;
+    }
+
+    /// Write a single character at the current write position on the screen.
+    method void writeChar(char c) {
+        do Output.moveCursor(outputRow_, outputColumn_);
+        if (c = String.backSpace()) {
+            if (outputColumn_ = 0) {
+                let outputColumn_ = 63;
+                if (outputRow_ = outputRowBase_) {
+                    // do nothing
+                } else {
+                    let outputRow_ = outputRow_ - 1;
+                    do Output.backSpace();
+                }
+            } else {
+                let outputColumn_ = outputColumn_ - 1;
+                do Output.backSpace();
+            }
+        } else {
+            do Output.printChar(c);
+            let outputColumn_ = outputColumn_ + 1;
+            if (outputColumn_ = 64) {
+                let outputColumn_ = 0;
+                let outputRow_ = outputRow_ + 1;
+                if (outputRow_ = 22) {
+                    let outputRow_ = outputRowBase_;  // wrap-around
+                }
+            }
+        }
+        return;
+    }
+
+    function void clearRow(int row) {
+        var int y;
+        let y = 1 + (row * 11);
+        do Screen.setColor(false);
+        do Screen.drawRectangle(0, y, 511, y + 10);
+        return;
+    }
+
+    // This function is theoretically faster than clearRow(), but flickers
+    // simetimes occur.
+    function void clearRowFast(int row) {
+        var Array memory;
+        var int i;
+        let memory = 16384 + 32 + (row * 352);  // 352 = 32 * 11
+        while (i < 352) {
+            let memory[i] = 0;
+            let i = i + 1;
+        }
+        return;
+    }
+}

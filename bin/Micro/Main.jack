@@ -1,0 +1,56 @@
+class Micro {
+	static Array buffer; 
+	static String name;
+	function void init() {
+		let buffer = Array.new(16384);
+	}
+	
+	function void main() {
+		var int x;
+		
+		do Output.printString("would you like to create a new file or open an existing file?");
+		do Output.println();
+		do Output.printString("Type 0 for the first chice, and 1 for the second choice");
+		do Output.println();
+		
+		while (~(x < 2)) {
+			let x = Keyboard.readInt();
+			
+			if (x > 2)) {
+				do Output.printString("invalid input, answer with 0 or 1");
+			}
+		}
+		
+		if (x == 0) {
+			do newFile();
+			return;
+		}
+		if (x == 1) {
+			do existingFile();
+			do name.dispose();
+			do buffer.dispose();
+			return;
+		}
+	}
+	
+	function void newFile() {
+		do Output.printString("what would you like to name this file?");
+		do Output.println();
+		let name = String.new(16);
+		let name = Keyboard.readLine("");
+		do TxtFile.create(name, true);
+		do EditFile();
+		return;
+	}
+	
+	function void existingFile() {
+		//doesn't exist yet
+		return;
+	}
+	
+	function EditFile() {
+		let buffer = Keyboard.readPage();
+		do TxtFile.write(name, buffer);
+		return;
+	}
+}

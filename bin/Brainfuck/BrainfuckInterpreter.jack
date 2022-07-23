@@ -1,0 +1,236 @@
+// Brainfuck interpreter.
+class BrainfuckInterpreter {
+    field BrainfuckIO io_;
+
+    /// The number of cells allocated.
+    field int numCells_;
+
+    /// Cell pointer.
+    field int cp_;
+
+    /// Cells.
+    field Array cells_;
+
+    /// Instruction pointer.
+    field int ip_;
+
+    /// The number of instructions executed.
+    field int steps_;
+
+    /// The source code to execute.
+    field String code_;
+
+    // public
+
+    constructor BrainfuckInterpreter new(BrainfuckIO io, int numCells, String code) {
+        let io_ = io;
+        do initCells(numCells);
+        do initCode(code);
+        return this;
+    }
+
+    method void dispose() {
+        do tidyCode();
+        do tidyCells();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method String code() {
+        return code_;
+    }
+
+    /// Get the instruction pointer.
+    method int ip() {
+        return ip_;
+    }
+
+    /// Get the cell pointer.
+    method int cp() {
+        return cp_;
+    }
+
+    /// Get the number of cells.
+    method int numCells() {
+        return numCells_;
+    }
+
+    /// Get the value of the i-th cell.
+    method int cellAt(int i) {
+        if ((i < 0) | ~(i < numCells_)) {
+            do Error.output(
+                "BrainfuckInterpreter.cellAt: Cell reference out of range");
+        }
+        return cells_[i];
+    }
+
+    method int steps() {
+        return steps_;
+    }
+
+    method boolean isRunning() {
+        if (ip_ < code_.length()) {
+            return true;
+        }
+        return false;
+    }
+
+    /// Evaluate the current instruction.
+    method void eval() {
+        var char op;
+
+        let op = code_.charAt(ip_);
+
+        if (op = 62) {  // ">"
+            let cp_ = cp_ + 1;
+            if (cp_ = numCells_) {
+                let cp_ = 0;  // wrap-around
+            }
+            let ip_ = ip_ + 1;
+            let steps_ = steps_ + 1;
+            return;
+        }
+        if (op = 60) {  // "<"
+            let cp_ = cp_ - 1;
+            if (cp_ < 0) {
+                let cp_ = numCells_ - 1;  // wrap-around
+            }
+            let ip_ = ip_ + 1;
+            let steps_ = steps_ + 1;
+            return;
+        }
+        if (op = 43) {  // "+"
+            let cells_[cp_] = (cells_[cp_] + 1) & 255;
+            let ip_ = ip_ + 1;
+            let steps_ = steps_ + 1;
+            return;
+        }
+        if (op = 45) {  // "-"
+            let cells_[cp_] = (cells_[cp_] - 1) & 255;
+            let ip_ = ip_ + 1;
+            let steps_ = steps_ + 1;
+            return;
+        }
+        if (op = 46) {  // "."
+            do io_.writeChar(cells_[cp_]);
+            let ip_ = ip_ + 1;
+            let steps_ = steps_ + 1;
+            return;
+        }
+        if (op = 44) {  // ","
+            let cells_[cp_] = io_.readChar();
+            let ip_ = ip_ + 1;
+            let steps_ = steps_ + 1;
+            return;
+        }
+        if (op = 91) {  // "["
+            if (cells_[cp_] = 0) {
+                do gotoEndOfLoop();
+            }
+            let ip_ = ip_ + 1;
+            let steps_ = steps_ + 1;
+            return;
+        }
+        if (op = 93) {  // "]"
+            do gotoStartOfLoop();
+            let steps_ = steps_ + 1;
+            return;
+        }
+
+        let ip_ = ip_ + 1;
+        return;
+    }
+
+    // private
+
+    method void initCells(int numCells) {
+        var int i;
+
+        let numCells_ = numCells;
+        let cp_ = 0;
+        let cells_ = Array.new(numCells);
+
+        let i = 0;
+        while (i < numCells) {
+            let cells_[i] = 0;
+            let i = i + 1;
+        }
+
+        return;
+    }
+
+    method void tidyCells() {
+        do cells_.dispose();
+        return;
+    }
+
+    method void initCode(String code) {
+        let ip_ = 0;
+        let steps_ = 0;
+        let code_ = code;
+        return;
+    }
+
+    method void tidyCode() {
+        // do nothing
+        return;
+    }
+
+    // We can improve the performance of the following methods using a stack,
+    // but it requires additional memory and a member field for its size.
+    //
+    // The following methods are naive implementations, but work properly with
+    // a few local variables.
+
+    /// Move the instruction pointer to the end of the loop.
+    method void gotoEndOfLoop() {
+        var char op;
+        var int depth;
+
+        let ip_ = ip_ + 1;  // next to "["
+        let op = code_.charAt(ip_);
+        let depth = 0;
+
+        while (~((op = 93) & (depth = 0))) {
+            if (op = 91) {  // "["
+                let depth = depth + 1;
+            } else {
+                if (op = 93) {  // "]"
+                    let depth = depth - 1;
+                }
+            }
+            let ip_ = ip_ + 1;
+            let op = code_.charAt(ip_);
+        }
+
+        // ip_ points to the matching "]".
+
+        return;
+    }
+
+    /// Move the instruction pointer to the start of the loop.
+    method void gotoStartOfLoop() {
+        var char op;
+        var int depth;
+
+        let ip_ = ip_ - 1;  // previous to "]"
+        let op = code_.charAt(ip_);
+        let depth = 0;
+
+        while (~((op = 91) & (depth = 0))) {
+            if (op = 91) {  // "["
+                let depth = depth - 1;
+            } else {
+                if (op = 93) {  // "]"
+                    let depth = depth + 1;
+                }
+            }
+            let ip_ = ip_ - 1;
+            let op = code_.charAt(ip_);
+        }
+
+        // ip_ points to the matching "[".
+
+        return;
+    }
+}

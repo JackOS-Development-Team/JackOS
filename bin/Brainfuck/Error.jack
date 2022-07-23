@@ -1,0 +1,25 @@
+/// NOTE
+/// ----
+/// A call of Output.printString() with a string literal like below leaks the
+/// String object for the string literal:
+///
+///   do Output.printString("message");
+///
+/// In many programming languages, we don't have to manually dispose String
+/// objects created from string literals.  However, we have to dispose those
+/// manually in any Jack program in order to avoid memory leaks.  A string
+/// literal creates a String object in the heap and the reference implementation
+/// of the Jack compiler does NOT generate any code to dispose it automagically.
+///
+/// However, we don't have to do that in Error.output().  Because it calls
+/// Sys.halt() just after printing a message for the error.
+class Error {
+    /// Output an error message in the last line on the screen.
+    function void output(String message) {
+        do Output.moveCursor(22, 0);
+        do Output.printString("ERROR: ");
+        do Output.printString(message);
+        do Sys.halt();
+        return;
+    }
+}

@@ -1,0 +1,159 @@
+
+class Main {
+	static String x;
+	static String prompt;
+	
+	function void init() {
+		let prompt = String.new(1);
+		do prompt.appendChar(">");
+	}
+	
+	function boolean run() {
+		//variable declarations
+		 
+		var String temp;
+		var boolean running;
+		var String upper;
+		var String lower1;
+		var String lower2;
+		var String lower3;
+		var boolean parsingCommand
+		var boolean parsingInput1;
+		var boolean parsingInput2;
+		var boolean parsingInput3;
+		var int i;
+		var boolean noInput1;
+		var boolean noInput2;
+		var boolean noInput3;
+		var Stack stack;
+		var int x;
+		var int y;
+		var int A;
+		
+		let A = 0;
+		let x = 0;
+		let y = 0;
+		let noInput1 = false;
+		let noInput2 = false;
+		let noInput3 = false;
+		let i = 0;
+		let parsingCommand = true;
+		let parsingInput1 = true;
+		let parsingInput2 = true;
+		let parsingInput3 = true;
+		let lower1 = String.new(32);
+		let lower2 = String.new(32);
+		let lower3 = String.new(32);
+		let upper = String.new(32);
+		let temp = String.new(128);
+		let running = true;
+		
+		
+		let stack = Stack.new(1024);
+		
+		
+		//the loop
+		while (running) {
+		
+			let x = Keyboard.readLine(prompt);
+			do temp.appendString(x);
+			
+			
+			while (parsingCommand){
+				while (~(i == 32)){
+					do upper.appendChar(temp.charAt(i));
+					let i += 1;
+				}
+				if (upper.charAtEnd() == 32 | null) {
+					let parsingCommand = false;
+					if (upper.charAtEnd == null) {
+						let noInput1 = true;
+					}
+				}
+			
+			
+			//pasrsing the inputs
+			while (parsingInput1) {
+				
+				if (noInput1 == true) {
+					let parsingInput1 = false;
+				}
+				
+				while (~(i == 32)){
+					do upper.appendChar(temp.charAt(i));
+					let i += 1;
+				}
+				
+				if (lower1.charAtEnd() == 32 | null) {
+					let parsingInput1 = false;
+					if (lower1.charAtEnd() == null) {
+						let noInput2 = true;
+					}
+				}
+			}
+			
+			while (parsingInput2) {
+				
+				if (noInput2 == true) {
+					let parsingInput2 = false;
+				}
+				
+				while (~(i == 32)){
+					do upper.appendChar(temp.charAt(i));
+					let i += 1;
+				}
+				
+				if (lower2.charAtEnd() == 32 | null) {
+					let parsingInput2 = false;
+					if (lower2.charAtEnd() == null) {
+						let noInput3 = true;
+					}
+				}
+			}
+			
+			while (parsingInput3) {
+				
+				if (noInput3 == true) {
+					let parsingInput3 = false;
+				}
+				
+				while (~(i == 32)){
+					do upper.appendChar(temp.charAt(i));
+					let i += 1;
+				}
+				
+				if (lower3.charAtEnd() == 32 | null) {
+					let parsingInput3 = false;
+				}
+			}
+			
+			
+			//seeing which commands
+			if (String.compare(upper, "push") == 0) {
+				do stack.push(lower1);
+			}
+			if (String.compare(upper, "pop") == 0) {
+				do stack.pop;
+			}
+			if (String.compare(upper, "add") == 0) {
+				let x = stack.pop()
+				let y = stack.pop();
+				let A = x + y;
+				do stack.push(A);
+			}
+			if (String.compare(upper, "sub") == 0) {
+				let x = stack.pop();
+				let y = stack.pop();
+				let A = x - y;
+				do stack.push(A);
+			}
+			
+			else {
+				do Output.printString("Command Not Found");
+			}
+		}
+		
+		return;
+	}
+	
+}

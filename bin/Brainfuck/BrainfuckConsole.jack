@@ -1,0 +1,261 @@
+/// This class executes an Brainf*ck interpreter and manages views to display
+/// the execution state of the interpreter graphically.
+class BrainfuckConsole {
+    field BrainfuckIO io_;
+    field BrainfuckInterpreter interp_;
+    field int cellViewRow_, outputViewRow_;
+    field int prevIP_;
+
+    /// Create a console object.
+    constructor BrainfuckConsole new() {
+        let io_ = 0;
+        let interp_ = 0;
+        let prevIP_ = -1;
+        return this;
+    }
+
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /// Execute a source code in an interpreter.
+    ///
+    /// program
+    ///   A Brainfuck program to execute.
+    ///
+    method void run(BrainfuckProgram program) {
+        do Screen.clearScreen();
+
+        do computeViewPositions(program.numCells(), program.code());
+
+        let io_ = BrainfuckIO.new(outputViewRow_ + 1);
+        let interp_ = BrainfuckInterpreter.new(
+            io_, program.numCells(), program.code());
+
+        do printViewLabels();
+        do printCode();
+
+        while (interp_.isRunning()) {
+            do updateViews();
+            do interp_.eval();
+            do Sys.wait(program.interval());
+        }
+
+        do updateViews();
+
+        do interp_.dispose();
+        let interp_ = 0;
+        do io_.dispose();
+        let io_ = 0;
+
+        return;
+    }
+
+    // private
+
+    method void computeViewPositions(int numCells, String code) {
+        var int codeRows, cellRows;
+        let codeRows = (code.length() + 63) / 64;
+        let cellRows = (numCells + 15) / 16;
+        let cellViewRow_ = codeRows + 2;
+        let outputViewRow_ = cellViewRow_ + cellRows + 2;
+        return;
+    }
+
+    method void printViewLabels() {
+        do printCodeViewLabel();
+        do printCellViewLabel();
+        do printOutputViewLabel();
+        return;
+    }
+
+    method void printCode() {
+        do Output.moveCursor(1, 0);
+        do Output.printString(interp_.code());
+        return;
+    }
+
+    method void updateViews() {
+        do updateCodeView();
+        do updateCellView();
+        do updateStepView();
+        return;
+    }
+
+    method void printCodeViewLabel() {
+        var String code;
+        let code = interp_.code();
+        do Output.moveCursor(0, 0);
+        do Output.printChar(91);  // "["
+        do Output.printChar(67);  // "C"
+        do Output.printChar(79);  // "O"
+        do Output.printChar(68);  // "D"
+        do Output.printChar(69);  // "E"
+        do Output.printChar(40);  // "("
+        do Output.printInt(code.length());
+        do Output.printChar(41);  // ")"
+        do Output.printChar(93);  // "]"
+        return;
+    }
+
+    method void updateCodeView() {
+        var String code;
+        var int ip, end;
+
+        let code = interp_.code();
+        let end = code.length();
+        let ip = interp_.ip();
+
+        if (ip = prevIP_) {
+            return;
+        }
+
+        if (~(prevIP_ < 0)) {
+            do BrainfuckConsole.invertColor((prevIP_ / 64) + 1, prevIP_ & 63);
+        }
+
+        if (~(ip = end)) {
+            do BrainfuckConsole.invertColor((ip / 64) + 1, ip & 63);
+        }
+
+        let prevIP_ = ip;
+
+        return;
+    }
+
+    method void printCellViewLabel() {
+        do Output.moveCursor(cellViewRow_, 0);
+        do Output.printChar(91);  // "["
+        do Output.printChar(67);  // "C"
+        do Output.printChar(69);  // "E"
+        do Output.printChar(76);  // "L"
+        do Output.printChar(76);  // "L"
+        do Output.printChar(83);  // "S"
+        do Output.printChar(40);  // "("
+        do Output.printInt(interp_.numCells());
+        do Output.printChar(41);  // ")"
+        do Output.printChar(93);  // "]"
+        return;
+    }
+
+    method void updateCellView() {
+        var int row, cp, numCells, column, i;
+
+        let row = cellViewRow_ + 1;
+        do Output.moveCursor(row, 0);
+
+        let cp = interp_.cp();
+
+        let numCells = interp_.numCells();
+        let column = 0;
+        let i = 0;
+        while (i < numCells) {
+            do BrainfuckConsole.printCell(interp_.cellAt(i));
+            if (i = cp) {
+                do BrainfuckConsole.invertColor(row, column);
+                do BrainfuckConsole.invertColor(row, column + 1);
+                do BrainfuckConsole.invertColor(row, column + 2);
+            }
+
+            let column = column + 3;
+            let i = i + 1;
+
+            if ((i & 15) = 0) {
+                do Output.println();
+                let row = row + 1;
+                let column = 0;
+            } else {
+                do Output.printChar(32);  // " "
+                let column = column + 1;
+            }
+        }
+
+        return;
+    }
+
+    function void printCell(int value) {
+        var int d0, d1, d2;
+        let d1 = value / 10;
+        let d0 = value - (d1 * 10);
+        let d2 = d1 / 10;
+        let d1 = d1 - (d2 * 10);
+        if (d2 = 0) {
+            do Output.printChar(32);  // " "
+        } else {
+            do Output.printChar(d2 + 48);  // digit
+        }
+        if (d1 = 0) {
+            if (d2 = 0) {
+                do Output.printChar(32);  // " "
+            } else {
+                do Output.printChar(48);  // "0"
+            }
+        } else {
+            do Output.printChar(d1 + 48);  // digit
+        }
+        do Output.printChar(d0 + 48);  // digit
+        return;
+    }
+
+    method void printOutputViewLabel() {
+        do Output.moveCursor(outputViewRow_, 0);
+        do Output.printChar(91);  // "["
+        do Output.printChar(79);  // "O"
+        do Output.printChar(85);  // "U"
+        do Output.printChar(84);  // "T"
+        do Output.printChar(80);  // "P"
+        do Output.printChar(85);  // "U"
+        do Output.printChar(84);  // "T"
+        do Output.printChar(93);  // "]"
+        return;
+    }
+
+    method void updateStepView() {
+        do BrainfuckIO.clearRow(22);
+        do Output.moveCursor(22, 0);
+        do Output.printChar(83);  // "S"
+        do Output.printChar(84);  // "T"
+        do Output.printChar(69);  // "E"
+        do Output.printChar(80);  // "P"
+        do Output.printChar(83);  // "S"
+        do Output.printChar(61);  // "="
+        do Output.printInt(interp_.steps());
+        do Output.printChar(32);  // " "
+        do Output.printChar(73);  // "I"
+        do Output.printChar(80);  // "P"
+        do Output.printChar(61);  // "="
+        do Output.printInt(interp_.ip());
+        do Output.printChar(32);  // " "
+        do Output.printChar(67);  // "C"
+        do Output.printChar(80);  // "P"
+        do Output.printChar(61);  // "="
+        do Output.printInt(interp_.cp());
+        return;
+    }
+
+    function void invertColor(int row, int column) {
+        var int dy, offset, pixels;
+        var Array memory;
+        var bool higherBits;
+        let memory = 16384 + 32;  // 0x4000 + 32
+        let dy = 0;
+        if ((column & 1) = 0) {
+            let higherBits = false;
+        } else {
+            let higherBits = true;
+        }
+        let offset = (row * 352) + (column / 2);  // 352 = 32 * 11
+        while (dy < 11) {
+            let pixels = memory[offset];
+            if (higherBits) {
+                let memory[offset] = (~pixels & ~255) | (pixels & 255);
+            } else {
+                let memory[offset] = (pixels & ~255) | (~pixels & 255);
+            }
+            let dy = dy + 1;
+            let offset = offset + 32;
+        }
+        return;
+    }
+}

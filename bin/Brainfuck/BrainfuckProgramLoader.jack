@@ -1,0 +1,71 @@
+class BrainfuckProgramLoader {
+    function BrainfuckProgram load() {
+        var int interval, numCells, codeLen, i;
+        var String code, prompt;
+
+        let prompt = "Interval in milli-seconds: ";
+        let interval = BrainfuckProgramLoader.readUint(prompt);
+        do prompt.dispose();
+
+        let prompt = "#Cells (<=80): ";
+        let numCells = BrainfuckProgramLoader.readUint(prompt);
+        do prompt.dispose();
+        if (numCells > 80) {
+            do Error.output("BrainfuckProgramLoader.load: Too many cells");
+        }
+
+        let prompt = "#Chars in program (<=512): ";
+        let codeLen = BrainfuckProgramLoader.readUint(prompt);
+        do prompt.dispose();
+        if (codeLen > 512) {
+            do Error.output("BrainfuckProgramLoader.load: Too long program");
+        }
+
+        let prompt = "Program: ";
+        do Output.printString(prompt);
+        do prompt.dispose();
+        let code = String.new(codeLen);
+        let i = 0;
+        while (i < codeLen) {
+            do code.appendChar(BrainfuckProgramLoader.readChar());
+            let i = i + 1;
+        }
+
+        return BrainfuckProgram.new(interval, numCells, code);
+    }
+
+    // private
+
+    function int readUint(String prompt) {
+        var char c;
+        var int n;
+        do Output.printString(prompt);
+        let n = 0;
+        while (true) {
+            let c = BrainfuckProgramLoader.readChar();
+            if (c = String.newLine()) {
+                return n;
+            }
+            if ((c < 48) | (c > 57)) {
+                do Error.output("BrainfuckProgramLoader.readUint: Non-digit");
+            }
+            let n = (n * 10) + (c - 48);
+            if (n < 0) {
+                do Error.output("BrainfuckProgramLoader.readUint: Overflow");
+            }
+        }
+        return 0;  // never reach here
+    }
+
+    // The built-in Keyboard.readChar() is slow.
+    function char readChar() {
+        var char c;
+        let c = Keyboard.keyPressed();
+        while (c = 0) {
+            let c = Keyboard.keyPressed();
+        }
+        while (~(Keyboard.keyPressed() = 0)) {}
+        do Output.printChar(c);
+        return c;
+    }
+}

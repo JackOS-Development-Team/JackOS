@@ -1,0 +1,17 @@
+class Main {
+    function void main() {
+        var BrainfuckProgram program;
+        var BrainfuckConsole console;
+
+        let program = BrainfuckProgramLoader.load();
+        let console = BrainfuckConsole.new();
+        do console.run(program);
+
+        // Practically, we don't need to dispose any objects allocated in the
+        // heap memory because the program is going to terminate soon.
+        do console.dispose();
+        do program.dispose();
+
+        return;
+    }
+}
