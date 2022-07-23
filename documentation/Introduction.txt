@@ -1,0 +1,7 @@
+JackOS is a simple operating system that is an extension to the original jackOS in the Elements of Computing Systems. 
+The features are...
+  -Singke tasking
+  -Simple fs
+  -can run programs
+  -Brainfuck interpretor
+  
