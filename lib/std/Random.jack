@@ -1,0 +1,45 @@
+/**
+ * Simple pseudo random number generator.
+ */
+
+class Random {
+	static int seed;
+	
+	function void setSeed(int s) {
+		let seed = s;
+	}
+	
+	function int getRand(int range) {
+		var int r;
+		var int check;
+		var int ans;
+		let r = range;
+		let check = 0;
+		
+		let check = Math.max(seed, range);
+		if (check == seed) {
+			let ans = Math.mod(seed, range);
+		}
+		else {
+			let ans = Math.mod(range, seed);
+		}
+		let ans = ans + Random.rand();
+		let ans = Math.sqrt(ans);
+		let ans = ans + Math.Divide(Random.rand, Random.rand);
+		let seed = ans;
+		
+		return ans;
+	}
+	
+	function int rand() {
+		var int ans;
+		let ans = ans + 17;
+		let ans = ans * seed;
+		let ans = ans / (ans - seed);
+		let ans = Math.mod(ans + ans, ans + seed);
+		let ans = ans & seed;
+		let seed = ans;
+		return ans;
+		
+	}
+}

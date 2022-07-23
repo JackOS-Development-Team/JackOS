@@ -1,0 +1,62 @@
+/**
+* GPIO provides access to GPIO pins of Hack
+*/
+class GPIO {
+ 	static int gpio0;
+  static int gpio1;
+  static int gpio2;
+  static int gpio3;
+  static int gpio4;
+  static int gpio5;
+  static int gpio6;
+  static int gpio7
+
+	/** memory map of GPIO (leds @addr, but @addr+1) */
+	function void init(int addr){
+		let gpio0 = addr;
+    let gpio1 = addr + 1;
+    let gpio2 = addr + 2;
+    let gpio3 = addr + 3;
+    let gpio4 = addr + 4;
+    let gpio5 = addr + 5;
+    let gpio6 = addr + 6;
+    let gpio7 = addr + 7;
+		return;
+	}
+ 
+  function gpio(int addr, boolean state) {
+    if (addr == 0) {
+      do Memory.poke(gpio0, state);
+    }
+    
+    if (addr == 1) {
+      do Memory.poke(gpio1, state);
+    }
+    
+    if (addr == 2) {
+      do Memory.poke(gpio2, state);
+    }
+    
+    if (addr == 3) {
+      do Memory.poke(gpio3, state);
+    }
+    
+    if (addr == 4) {
+      do Memory.poke(gpio4, state);
+    }
+    
+    if (addr == 5) {
+      do Memory.poke(gpio5, state);
+    }
+    
+    if (addr == 6) {
+      do Memory.poke(gpio6, state);
+    }
+    
+    if (addr == 7) {
+      do Memory.poke(gpio7, state);
+    }
+    
+  }
+
+}

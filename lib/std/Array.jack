@@ -1,0 +1,14 @@
+class Array {
+    constructor Array new(int size) {
+        var int s;
+		let s = size;
+		return Memory.malloc(s);
+    }
+    method void dispose() {
+        do Memory.free(this);
+        return;
+    }
+	method int size() {
+		return s;
+	}
+}

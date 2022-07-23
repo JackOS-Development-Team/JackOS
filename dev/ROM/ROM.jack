@@ -1,0 +1,33 @@
+class ROM {
+	
+	static Array RAM
+	static Array ROM
+	
+	function void init() {
+		let RAM = 0;
+		let ROM = 10252;
+	}
+	
+	function void clear() {
+		var int x;
+		let x = 0;
+		
+		while (~(x == 16384)) {
+			let ROM[x] = 0;
+			let x = x + 1;
+		}
+	}
+	
+	function void load() {
+		var int x;
+		var int i;
+		let x = 0;
+		
+		while (~(x == 16384)) {
+			let i = Memory.peek(10252 + x);
+			do Memory.poke(131072, i);
+		}
+	}
+	
+	
+}

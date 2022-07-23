@@ -1,0 +1,406 @@
+// Copyright 2013 Mark Armbrust.  Permission granted
+// for educational use.
+
+/** Type Trig -- trigonometric functions using type Float.
+ *
+ *	This class implements floating point trigonometric functions.
+ *
+ *	All angles are in radians.
+ *	All functions that return a Float return a static variable that
+ *	must be copied.
+ *
+ *	Public interface:
+ *
+ *	Initialization
+ *		function void init()
+ *
+ *	Constants and conversions
+ *		function Float pi()
+ *		function Float rad(Float d)
+ *		function Float deg(Float r)
+ *
+ *	Basic functions
+ *		function Float sin(Float a)
+ *		function Float cos(Float a)
+ *		function Float tan(Float a)
+ *		function Float asin(Float x)
+ *		function Float acos(Float x)
+ *		function Float atan(Float x)
+ *		function Float atan2(Float y, Float x)
+ *
+ *	Auxiliary functions
+ *		function void toRect(Float r, Float a, Float ret_x, Float ret_y)
+ *		function void toPolar(Float x, Float y, Float ret_r, Float ret_a)
+ *		function Float lastSin()
+ *		function Float lastCos()
+ */
+
+class Trig 
+{
+	static Float s_PI;			// constants used by Trig functions
+	static Float s_2PI;	
+	static Float s_PIdiv2;	
+	static Float s_negPIdiv2;	
+	static Float s_3PIdiv2;
+	static Float s_one;
+	static Float s_retRad;		// return value from rad, deg
+	static Float s_retSin;		// return value from sin; aux value from cos, tan
+	static Float s_retCos;		// return value from cos; aux value from sin, tan
+	static Float s_retTan;		// return value from tan, asin, acos, atan, atan2
+	
+
+	/**
+	 *	Initialize the Trig package.
+	 *
+	 *	This function must be called before using any other Trig routine.
+	 *
+	 *		do Trig.init();
+	 *
+	 *	There is no return value.
+	 *
+	 *	*** W A R N I N G ***
+	 *	This function assumes that Float.init() has already been called.
+	 */
+	 
+	function void init()
+	{
+		do Cordic.init();
+		let s_PI = Float._newConst(25735, -4783, 1);		// pi
+		let s_2PI = Float._newConst(25735, -4783, 2);		// 2 pi
+		let s_PIdiv2 = Float._newConst(25735, -4783, 0);	// pi/2
+		let s_negPIdiv2 = Float._newConst(-25736, 4783, 0);	// -pi/2
+		let s_3PIdiv2 = Float._newConst(19301, -3587, 2);	// 3 pi/2
+		let s_one = Float.new();
+		do s_one.setInt(1);
+		
+		let s_retRad = Float.new();
+		let s_retSin = Float.new();
+		let s_retCos = Float.new();
+		let s_retTan = Float.new();
+		return;
+	}
+
+
+	/**
+	 *	Return constant pi.
+	 *
+	 *		do f.set(Trig.pi());
+	 */	
+	 
+	function Float pi()
+	{
+		return s_PI;
+	}
+
+
+	/**
+	 *	Convert degrees to radians.
+	 *
+	 *		do f.set(Trig.rad(f_degrees));
+	 */
+	 
+	function Float rad(Float d)
+	{
+		do s_retRad.set(d);
+		do s_retRad.mult(s_PI);
+		do s_retRad.divInt(180);
+		return s_retRad;
+	}
+	
+
+	/**
+	 *	Convert radians to degrees.
+	 *
+	 *		do f.set(Trig.deg(f_radians));
+	 */
+	 
+	function Float deg(Float r)
+	{
+		do s_retRad.set(r);
+		do s_retRad.multInt(180);
+		do s_retRad.div(s_PI);
+		return s_retRad;
+	}
+
+
+	/** 
+	 *	Return the sine of an angle.
+	 *
+	 *		do f.set(Trig.sin(f_radians));
+	 *		do f.set(Trig.sin(Trig.rad(f_degrees)));
+	 *
+	 *	Side effect:  The algoritm used simultaniously computes sine and
+	 *	cosine.  For efficiency, the cosine is made available after this
+	 *	call by Trig.lastCos().
+	 */
+	 
+	function Float sin(Float a)	
+	{
+		do Trig.toRect(s_one, a, s_retCos, s_retSin);
+		return s_retSin;
+	}
+	
+
+	/**
+	 *	Return the cosine of an angle.
+	 *
+	 *		do f.set(Trig.cos(f_radians));
+	 *		do f.set(Trig.cos(Trig.rad(f_degrees)));
+	 *
+	 *	Side effect:  The algoritm used simultaniously computes sine and
+	 *	cosine.  For efficiency, the sine is made available after this
+	 *	call by Trig.lastSin().
+	 */
+
+	 function Float cos(Float a)	
+	{
+		do Trig.toRect(s_one, a, s_retCos, s_retSin);
+		return s_retCos;
+	}
+	
+
+	/**
+	 *	Return the tangent of angle.
+	 *
+	 *		do f.set(Trig.tan(f_radians));
+	 *		do f.set(Trig.tan(Trig.rad(f_degrees)));
+	 *
+	 *	Side effect:  The algoritm used simultaniously computes sine and
+	 *	cosine.  For efficiency, the sine and cosine are made available
+	 *	after this call by Trig.lastSin() and Trig.lastCos().
+	 */
+	 
+	function Float tan(Float a)	
+	{
+		do Trig.toRect(s_one, a, s_retCos, s_retSin);
+		if (s_retCos.isZero()) {
+			if (s_retSin.isPos()) {
+				do s_retTan.set(Float.posInf()); }
+			else {
+				do s_retTan.set(Float.negInf()); }
+		} else {
+			do s_retTan.set(s_retSin);
+			do s_retTan.div(s_retCos);
+		}
+	return s_retTan;
+	}
+	
+	
+	/**
+	 *	Return the arcsine of x.  -1 <= x <= 1
+	 *
+	 *		do f_radians.set(Trig.asin(a_Float);
+	 *		do f_degrees.set(Trig.deg(Trig.asin(a_Float));
+	 *
+	 *	Returns -pi/2 <= angle <= pi/2.
+	 */
+	 
+	function Float asin(Float x)
+	{
+		var Float f;
+		var Float g;
+		let f = Float.newFloat(x);
+		do f.mult(f);						// f.mult(f) FUBAR
+		let g = Float.newFloat(s_one);
+		do g.sub(f);
+		do g.sqrt();
+
+		do Trig.atan2(x, g);	// result returned in s_retTan
+		
+		do f.dispose();
+		do g.dispose();
+		return s_retTan;
+	}
+	
+	
+	/**
+	 *	Return the arccosine of x.  -1 <= x <= 1
+	 *
+	 *		do f_radians.set(Trig.acos(a_Float);
+	 *		do f_degrees.set(Trig.deg(Trig.acos(a_Float));
+	 *
+	 *	Returns 0 <= angle <= pi.
+	 */
+	 
+	function Float acos(Float x)
+	{
+		var Float f;
+		var Float g;
+		let f = Float.newFloat(x);
+		do f.mult(f);
+		let g = Float.newFloat(s_one);
+		do g.sub(f);
+		do g.sqrt();
+		do f.set(x);
+
+		do Trig.atan2(g, f);	// result returned in s_retTan
+		
+		do f.dispose();
+		do g.dispose();
+		return s_retTan;
+	}
+	
+	
+	/**
+	 *	Return the arctangent of x.
+	 *
+	 *		do f_radians.set(Trig.atan(a_Float);
+	 *		do f_degrees.set(Trig.deg(Trig.atan(a_Float));
+	 *
+	 *	Returns -pi/2 <= angle <= pi/2.
+	 */
+	 
+	function Float atan(Float x)
+	{
+		return Trig.atan2(x, s_one);
+	}
+	
+	
+	/**
+	 *	Return the arctangent of y/x.  x=0 is allowed.
+	 *
+	 *		do f_radians.set(Trig.atan2(y, x);
+	 *		do f_degrees.set(Trig.deg(Trig.atan2(y, x));
+	 *
+	 *	Returns -pi < angle <= pi.
+	 */
+	 
+	function Float atan2(Float y, Float x)
+	{
+		var Float unused;
+		let unused = Float.new();
+		do Trig.toPolar (x, y, unused, s_retTan);
+		do unused.dispose();
+		return s_retTan;
+	}
+ 	
+
+	/**
+	 *	Return the Sine value that resulted from the last call to sin(),
+	 *	cos(), or tan().
+	 */
+	 
+	function Float lastSin()
+	{
+		return s_retSin;
+	}
+
+	
+	/**
+	 *	Return the Cosine value that resulted from the last call to sin(),
+	 *	cos(), or tan().
+	 */
+
+	function Float lastCos()
+	{
+		return s_retCos;
+	}
+
+	
+	/**
+	 *	Convert polar coordinates (r, a) to rectangular coordinates (x, y).
+	 *
+	 *	let x = Float.new();
+	 *	let y = Float.new();
+	 *	do Trig.toRect(r, a, x, y);		// a in radians
+	 */
+	 
+	function void toRect(Float in_r, Float in_a, Float ret_x, Float ret_y)
+	{
+		var Float a;
+		var int i;
+		
+		if (in_a._exp() > 30) {
+			// angle too big; a mod 2pi = 0 so return (a, 0).
+			do ret_x.set(in_a);
+			do ret_y.setInt(0);
+			return;
+		}
+		
+		let a = Float.newFloat(in_a);
+		
+		// CORDIC requires -pi/2 <= a <= pi/2 so we need to reduce the 
+		// angle and handle the signs for the appropriate quadrant.
+
+		// a = fmod(a, 2*pi)
+		if (a.isNeg()) {
+			do a.neg(); }
+		do a.div(s_2PI);
+		let i = a._floor();
+		do a.set(in_a);
+		if (~(i=0)) {
+			do ret_x.set(s_2PI);
+			do ret_x.multInt(i);
+			if (in_a.isNeg()) {
+				do a.add(ret_x); }
+			else {
+				do a.sub(ret_x); }
+		}
+				
+		// -2pi <= a <= 2pi
+
+		if (a.compare(s_negPIdiv2) < 0) {
+			do a.add(s_2PI); }
+		if (a.compare(s_3PIdiv2) > 0) {
+			do a.sub(s_2PI); }
+
+		// -pi/2 <= a < 3pi/2
+			
+		do ret_x.set(in_r);
+		do ret_y.setInt(0);
+		if ( (a.compare(s_negPIdiv2)<0) | (a.compare(s_PIdiv2)>0) ) {
+			// quadrant II, III
+			do a.sub(s_PI);
+			do Cordic.cordic(ret_x, ret_y, a, false);
+			do ret_x.neg();
+			do ret_y.neg();
+		} else {
+			// quadrant I, IV
+			do Cordic.cordic(ret_x, ret_y, a, false);
+		}
+		do a.dispose();
+		return;
+	}		
+
+	
+	/**
+	 *	Convert rectangular coordinates (x, y) to polar coordinates (r, a).
+	 *
+	 *		let r = Float.new();
+	 *		let a = Float.new();
+	 *		do Trig.toRect(x, y, r, a);
+	 *
+	 *	Angle a is returned in radians.
+	 */
+
+	function void toPolar (Float in_x, Float in_y, Float ret_r, Float ret_a)
+	{
+		var Float x;
+		var Float y;
+		let x = Float.newFloat(in_x);
+		let y = Float.newFloat(in_y);
+		do ret_a.setInt(0);
+		if (~(x.isNeg())) {
+			// quadrant I, IV
+			do Cordic.cordic(x, y, ret_a, true);
+		}
+		else {
+			do x.neg();
+			do y.neg();
+			do Cordic.cordic(x, y, ret_a, true);
+			if (ret_a.isPos()) {
+				// quadrant III
+				do ret_a.sub(s_PI);
+			}
+			else {
+				// quadrant II
+				do ret_a.add(s_PI);
+			}
+		}
+		do ret_r.set(x);
+		do x.dispose();
+		do y.dispose();
+		return;
+	}
+
+}

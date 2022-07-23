@@ -1,0 +1,14 @@
+class DiskArray {
+    constructor DiskArray new(int size) {
+        var int s;
+		let s = size;
+		return Disk.alloc(s);
+    }
+    method void dispose() {
+        do Disk.deAlloc(this);
+        return;
+    }
+	
+	method int size() {return s;}
+	
+}

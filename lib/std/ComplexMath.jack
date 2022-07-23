@@ -1,0 +1,25 @@
+class ComplexMath {
+	
+	function int factorial(int a) {
+		var int num;
+		let num = 1;
+		
+		while (~(n < 1)) {
+			let num = num * n
+			let n = n - 1;
+		}
+		return num;
+	}
+	
+	function int gcd(int a, int b) {
+      var int r;
+      while (~(b = 0)) {             // applies Euclid's algorithm
+         let r = a - (b * (a / b));  // r = remainder of the integer division a/b
+         let a = b; let b = r;
+      }
+      return a;
+    }
+	
+	
+	
+}

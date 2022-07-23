@@ -1,0 +1,19 @@
+class UART {
+	static int uart;
+ 
+	function void init(int addr){
+		let uart = addr;
+		return;
+	}
+  
+	function char readChar() {
+		var int data;
+		let data = Memory.peek(uart);
+		return data;
+   	}
+
+   	function void writeChar(char c){
+		do Memory.poke(uart, c);
+   	}
+	
+}

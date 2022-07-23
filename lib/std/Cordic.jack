@@ -1,0 +1,209 @@
+// Copyright 2013 Mark Armbrust.  Permission granted
+// for educational use.
+
+/** Type Cordic -- CORDIC algorithm for computing circular functions.
+ *
+ *	This class implements the CORDIC algorithm.  
+ *
+ *	Public interface:
+ *		function void init()
+ *		function void cordic (Float x, Float y, Float z, bool mode)
+ *		function void setN (int n)
+ 
+ /** CORDIC trig functions using Float class. */
+
+class Cordic 
+{
+	static int iterations;		
+	static int ATAN_TABLE_LEN;
+	static Array atanTable;
+	static int K_TABLE_LEN;
+	static Array kTable;
+	
+	/**
+	 *	Initialize the CORDIC package.
+	 *
+	 *	This function must be called before using any other CORDIC routine.
+	 *
+	 *		do Cordic.init();
+	 *
+	 *	There is no return value.
+	 *
+	 *	*** W A R N I N G ***
+	 *	This function assumes that Float.init() has already been called.
+	 */
+	
+	function void init()
+	{
+		let iterations = 31;	// Number of significant mantissa bits in Float
+		
+		let ATAN_TABLE_LEN = 17;		
+		let atanTable = Array.new(ATAN_TABLE_LEN);
+		let atanTable[0] = Float._newConst(25735, -4783, -1);	// 0.7853981633 974483
+		let atanTable[1] = Float._newConst(30385, -25578, -2);	// 0.4636476090 008061
+		let atanTable[2] = Float._newConst(32109, -10267, -3);	// 0.2449786631 2686414
+		let atanTable[3] = Float._newConst(32598, -5525, -4);	// 0.1243549945 4676144
+		let atanTable[4] = Float._newConst(32725, 28381, -5);	// 0.06241880999 595735
+		let atanTable[5] = Float._newConst(32757, 22255, -6);	// 0.03123983343 0268277
+		let atanTable[6] = Float._newConst(32765, 21871, -7);	// 0.01562372862 0476831
+		let atanTable[7] = Float._newConst(32767, 21847, -8);	// 0.007812341060 101111
+		let atanTable[8] = Float._newConst(32767, -10923, -9);	// 0.003906230131 9669718
+		let atanTable[9] = Float._newConst(32767, -2731, -10);	// 0.001953122516 4788188
+		let atanTable[10] = Float._newConst(32767, -683, -11);	// 0.0009765621895 593195
+		let atanTable[11] = Float._newConst(32767, -171, -12);	// 0.0004882812111 948983
+		let atanTable[12] = Float._newConst(32767, -43, -13);	// 0.0002441406201 4936177
+		let atanTable[13] = Float._newConst(32767, -11, -14);	// 0.0001220703118 936702
+		let atanTable[14] = Float._newConst(32767, -3, -15);	// 6.103515617 420877e-05
+		let atanTable[15] = Float._newConst(32767, -1, -16);	// 3.051757811 5526096e-05
+		let atanTable[16] = Float._newConst(16384, 0, -16);		// 1.525878906 1315762e-05
+
+		let K_TABLE_LEN = 16;
+		let kTable = Array.new(K_TABLE_LEN);
+		let kTable[0] = Float._newConst(23170, 31130, -1);	// 0.7071067811 865476
+		let kTable[1] = Float._newConst(20724, 19849, -1);	// 0.6324555320 336759
+		let kTable[2] = Float._newConst(20105, -30998, -1);	// 0.6135719910 778964
+		let kTable[3] = Float._newConst(19950, 17671, -1);	// 0.6088339125 177524
+		let kTable[4] = Float._newConst(19911, 27398, -1);	// 0.6076482562 561683
+		let kTable[5] = Float._newConst(19901, -19477, -1);	// 0.6073517701 412959
+		let kTable[6] = Float._newConst(19899, 17946, -1);	// 0.6072776440 93526
+		let kTable[7] = Float._newConst(19898, -21850, -1);	// 0.6072591122 988927
+		let kTable[8] = Float._newConst(19898, -31799, -1);	// 0.6072544793 325624
+		let kTable[9] = Float._newConst(19898, 31249, -1);	// 0.6072533210 898752
+		let kTable[10] = Float._newConst(19898, 30627, -1);	// 0.6072530315 291343
+		let kTable[11] = Float._newConst(19898, 30472, -1);	// 0.6072529591 389448
+		let kTable[12] = Float._newConst(19898, 30433, -1);	// 0.6072529410 413972
+		let kTable[13] = Float._newConst(19898, 30423, -1);	// 0.6072529365 170102
+		let kTable[14] = Float._newConst(19898, 30421, -1);	// 0.6072529353 859135
+		let kTable[15] = Float._newConst(19898, 30420, -1);	// 0.6072529351 031393
+		return;
+	}
+	
+	
+	/**
+	 *	Set the number of iterations to use.
+	 *
+	 *		do Cordic.setN(n);
+	 *
+	 *	If n <= 0, the default number of iterations will be restored.
+	 *
+	 *	There is no return value.
+	 */
+
+	function void setN (int n)
+	{
+		if (n>0) {
+			let iterations = n; }
+		else {
+			let iterations = 31; }	// Number of significant mantissa bits in Float
+		return;
+	}
+	
+	
+	/**
+	 *	CORDIC algorithm for Trigonometric Functions
+	 *
+	 *	Arguments:
+	 *		x: Initial/final x value.
+	 *		y: Initial/final y value.
+	 *		z: Initial/final angle.  DOMAIN: -pi/2 <= z <= pi/2.
+	 *		mode: false (rotate) - vector (x,y) rotated CCW z radians.
+	 *			  true  (vector) - vector (x,y) rotated CW to 0 radians, rotation
+	 *							   angle returned in z.
+	 *
+	 *	Rotate Mode
+	 *		let x = Float.newFloat(a);
+	 *		let y = Float.newFloat(b);
+	 *		let z = Float.newFloat(theta);
+	 *		do Cordic.cordic(x, y, z, false);
+	 *	Returns
+	 *		x = a*cos(theta) - b*sin(theta)
+	 *		y = a*sin(theta) + b*cos(theta)
+	 *  Common Usage
+	 *		Initialize x = 1, y = 0, z = theta to compute x = cos(theta), y = sin(theta)
+	 *		Initialize x = r, y = 0, z = theta to convert polar coordinates (r, theta) to
+	 *			rectangular coordinates (x, y)
+	 *
+	 *	Vector Mode
+	 *		let x = Float.newFloat(a);
+	 *		let y = Float.newFloat(b);
+	 *		let z = Float.new();	// z = 0
+	 *		do Cordic.cordic(x, y, z, false);
+	 *	Returns
+	 *		x = sqrt(a^2+b^2)
+	 *		z = atan(b/a)
+	 *	Common Usage
+	 *		Initialize x = 1, y = f, z = 0 to compute z = atan(f)
+	 *		Initialize x = x', y = y', z = 0 to convert rectangular coordinates (x', y') to
+	 *			polar coordinates (x=r, z=theta).  (x', y') must be in quadrant I or IV.
+	 */
+
+	function void cordic (Float x, Float y, Float z, bool mode)
+	{
+		var Float t;
+		var Float at;
+		var int i;
+		var int sigma;
+		var Float xx;
+		var Float yy;
+		
+		let t = Float.new();
+		let at = Float.new();
+		let xx = Float.new();
+		let yy = Float.new();
+		
+		do t.setInt(1);				// tan of decreasing rotation angle
+		do at.set(atanTable[0]);	// invariant: at = atan(t)
+
+		let i = 0;
+		while (i < iterations) {
+			// sigma = -1 for CW, 1 for CCW
+			if (mode) {		// vector mode
+				if (y.isNeg()) {
+					let sigma = 1; }
+				else {
+					let sigma = -1;	}
+			} else {		// rotate mode
+				if (z.isNeg()) {
+					let sigma = -1; }
+				else {
+					let sigma = 1; }
+			}
+			
+			// rotate by atan(t)
+			//		x' = x - sigma * y * t;		
+			//		y' = y + sigma * x * t;
+			//		z' = z - sigma * atan(t);
+			do xx.setInt(sigma); do xx.mult(y); do xx.mult(t);
+			do yy.setInt(sigma); do yy.mult(x); do yy.mult(t);
+			do x.sub(xx);
+			do y.add(yy);
+			do xx.setInt(sigma); do xx.mult(at);
+			do z.sub(xx);
+
+			do t.divInt(2);					// update t and at
+			if (i+1 < ATAN_TABLE_LEN) {
+				do at.set(atanTable[i+1]);
+			} else {
+				do at.divInt(2);
+			}
+			let i = i+1;
+		}
+
+		// double k = (n<kTableLen) ? kTable[n-1] : kTable[kTableLen-1];
+		// using xx for k
+		if (iterations < K_TABLE_LEN) {
+			do xx.set(kTable[iterations-1]);
+		} else {
+			do xx.set(kTable[K_TABLE_LEN-1]);
+		}
+		do x.mult(xx);
+		do y.mult(xx);
+		
+		do t.dispose();
+		do at.dispose();
+		do xx.dispose();
+		do yy.dispose();
+		return;
+	}
+
+}
