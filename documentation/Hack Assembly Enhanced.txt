@@ -1,0 +1,74 @@
+Load instructions
+
+(LDA):
+LDA 0 123 (load the value 123 into A register from memory bank 0)
+LDA 0 foo (load “foo” (set by the assembler) into A register from memory bank 0)
+Always loads a fixed, literal value
+instruction code: 000000000000xxxx xxxxxxxxxxxxxxxx
+
+(STA)
+STA 0 123 (Stores the value in D Register into address 123 in memory bank 0)
+STA 0 foo (Stores “foo” (set by the assembler) into memory in memory bank 0
+effectivly creating or modifying a variable)
+Always stores a fixed, literal value
+instruction code: 010000000000xxxx xxxxxxxxxxxxxxxx
+
+Computation Instructions
+
+Computation instructions have three parts:
+1. Destination
+2. Computation
+
+Each instruction is of the form DEST=COMP
+Destination part is optional
+
+Destination
+Result of computation can be stored in A register, D register, M register (memory at location A), or any
+combination:
+M= …
+D= …
+MD= …
+A= …
+AM= …
+AD= …
+AMD= …
+The destination part is option; leave off the = if you are skipping it.
+
+Computation
+Any value computable by the ALU, with the X input being the value in the D register, and the Y input being
+the value of the A register or the M pseudo-register:
+comp comp
+0 
+1 
+-1 
+D 
+A 	  M
+!D 
+!A 	 !M
+-D 
+-A   -M
+D+1 
+A+1  M+1
+D-1 
+A-1  M-1
+D+A  D+M
+D-A  D-M
+A-D  M-D
+D&A  D&M
+D|A  D|M
+
+Ctrl Flow Instructions
+
+Jump Instructions
+
+JGT
+JEQ
+JGE
+JLT
+JNE
+JLE
+JMP
+
+Labels
+
+to define a label, type (labelname)
