@@ -1,5 +1,8 @@
 Dev Versions (Open Beta):
-- JackOS V2: The second dev version of JackOS, version one and two are proprietary and not availible.
+
+- JackOS V1: Barebones, not usable
+
+- JackOS V2: The second dev version of JackOS
 
 - JackOS V3: The third dev version, added 10+ commands to the CLI, added BrainF*ck interpretor
 
