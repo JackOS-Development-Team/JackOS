@@ -1,0 +1,11 @@
+Dev Versions (Open Beta):
+- JackOS V2: The second dev version of JackOS, version one and two are proprietary and not availible.
+
+- JackOS V3: The third dev version, added 10+ commands to the CLI, added BrainF*ck interpretor
+
+- JackOS V4: Unreleased dev version, scrapped.
+
+- JackOS V5, 6, 7: Planned, unreleased and scrapped.
+
+Full Versions + Release candidates:
+- JackOS v1.0.0-rc1: the first rc of version 1.0.0, added some library functions to the Jack STL.
