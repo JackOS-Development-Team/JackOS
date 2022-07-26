@@ -1,0 +1,46 @@
+Total Memory: 262144 Bytes
+
+Memory Bank #1(65535 Bytes):
+
+0       SP      Stack Pointer
+1       LCL     Points to the base of current VM function's local segment
+2       ARG     Points to the base of current VM function's argument segment
+3       THIS    Points to the base of this segment in the heap
+4       THAT    Points to the base of that segment in the heap
+5       Temp0   Temporary segment register
+6       Temp1   Temporary segment register
+7       Temp2   Temporary segment register
+8       Temp3   Temporary segment register
+9       Temp4   Temporary segment register
+10      Temp5   Temporary segment register
+11      Temp6   Temporary segment register
+12      Temp7   Temporary segment register
+13      R13     General purpose register 13
+14      R14     General purpose register 14
+15      R15     General purpose register 15
+16      Static variables
+256     Stack
+1280    GPIO MMIO
+1289	UART MMIO
+1290	External ROM
+17675   Screen MMIO
+25867	Keyboard MMIO
+25868	Unused
+
+Memory Bank #2(65535 Bytes):
+
+65536	Heap
+
+Memory Bank #3(65535 Bytes):
+
+131072	OS Code and Data Space
+
+Memory Bank #4(65535 Bytes):
+
+196608	Proccess Code Space
+
+Disk Space: 16777216 Bytes (16384 Bytes per file/directory)
+
+First 121 Files: Reserved for OS Image
+
+/home directory: user directory to make files ;)
