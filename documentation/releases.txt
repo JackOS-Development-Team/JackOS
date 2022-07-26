@@ -12,3 +12,5 @@ Dev Versions (Open Beta):
 
 Full Versions + Release candidates:
 - JackOS v1.0.0-rc1: the first rc of version 1.0.0, added some library functions to the Jack STL.
+
+- JackOS v1.0.0-rc2: minor changes
