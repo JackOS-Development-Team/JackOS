@@ -1,14 +1,16 @@
 class boot {
 	
 	function void boot() {
-	
+		
+		//doing this init first cause its required to be activated before printString()
 		do Memory.init();
-		do Math.init();
-		do Output.init();
 		do Screen.init();
+		do Output.init();
+		do Output.printString("Booting into JackOS...");
+		do Math.init();
 		do Keyboard.init();
 		do Disk.init();
-		do Output.printString("Booting into JackOS");
+		do Sys.init();
 		do kernel.kernel();
 	
 	}
