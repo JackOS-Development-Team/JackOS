@@ -1,0 +1,72 @@
+ *	Type Float -- floating point arithmetic.
+ *
+ *	This class implements floating point arithmetic with 32 bit signed
+ *	mantissa and 16 bit exponent.  This gives about 9.3 decimal digit
+ *	precision.
+ *
+ *	The exponent is artificially limited to 10 bits which limits the
+ *	base-10 exponents to about +-150.  (This limits the size of tables
+ *	of constants required for FP to string conversion.)
+ *
+ *	Representable numbers:
+ *		[-1.34078079(2)e+154, -7.45834073(1)e-155],
+ *		0,
+ *		[ 7.45834073(1)e-155,  1.34078079(2)e+154]
+ *
+ *	Public interface:
+ *
+ *	Initialization
+ *		function void init()
+ *
+ *	Constructor / destructor / assignment
+ *		constructor Float new()
+ *		constructor Float newFloat(Float f)
+ *		method void dispose()
+ *		method Float set(Float f)
+ *		method Float setInt(int i)
+ *
+ *	Constants
+ *		function int maxExp()
+ *		function int minExp()
+ *		function Float posInf()
+ *		function Float negInf()
+ *
+ *	Arithmetic
+ *		method Float neg()
+ *		method Float add(Float f)
+ *		method Float addInt(int i)
+ *		method Float sub(Float f)
+ *		method Float subInt(int i)
+ *		method Float mult(Float f)
+ *		method Float multInt(int i)
+ *		method Float div(Float f)
+ *		method Float divInt(int i)
+ *		method Float sqrt()
+ *
+ *	Tests
+ *		method int compare(Float f) 
+ *		method int compareInt(int i) 
+ *		method bool isZero() 
+ *		method bool isNeg() 
+ *		method bool isPos() 
+ *
+ *	I/O
+ *		method void print(int n)
+ *		method String toString(int n)
+ *		method Float setString(String s)
+ *
+ *
+ *	Example usage:
+ *
+ *		var Float f;
+ *		var Float g;
+ *		let f = Float.new();
+ *		let g = Float.new();
+ *
+ *		do f.setInt(355);
+ *		do g.setInt(113);
+ *		do f.div(g);
+ * 		do f.print(6);		// Prints 3.14159e+000
+ *
+ *		do f.dispose();
+ *		do g.dispose();

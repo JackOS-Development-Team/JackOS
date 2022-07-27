@@ -1,0 +1,32 @@
+Type Trig -- trigonometric functions using type Float.
+ *
+ *	This class implements floating point trigonometric functions.
+ *
+ *	All angles are in radians.
+ *	All functions that return a Float return a static variable that
+ *	must be copied.
+ *
+ *	Public interface:
+ *
+ *	Initialization
+ *		function void init()
+ *
+ *	Constants and conversions
+ *		function Float pi()
+ *		function Float rad(Float d)
+ *		function Float deg(Float r)
+ *
+ *	Basic functions
+ *		function Float sin(Float a)
+ *		function Float cos(Float a)
+ *		function Float tan(Float a)
+ *		function Float asin(Float x)
+ *		function Float acos(Float x)
+ *		function Float atan(Float x)
+ *		function Float atan2(Float y, Float x)
+ *
+ *	Auxiliary functions
+ *		function void toRect(Float r, Float a, Float ret_x, Float ret_y)
+ *		function void toPolar(Float x, Float y, Float ret_r, Float ret_a)
+ *		function Float lastSin()
+ *		function Float lastCos()
