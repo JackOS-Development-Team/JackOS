@@ -61,7 +61,7 @@ class Shell {
 						let noInput1 = true;
 					}
 				}
-			
+			}
 			
 			//pasrsing the inputs
 			while (parsingInput1) {
@@ -118,8 +118,7 @@ class Shell {
 				}
 			}
 			
-			
-			//seeing which commands
+				//seeing which commands
 			if (String.compareLength(upper, "shutdown") == 0) {
 				let running = false;
 			}
@@ -202,9 +201,12 @@ class Shell {
 			else {
 				do Output.printString("Command Not Found");
 			}
-		}
 		
-		return;
+		
+			
+		
+	return;
+	
 	}
 	
 }
