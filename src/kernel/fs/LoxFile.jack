@@ -1,4 +1,4 @@
-class JackFile {
+class LoxFile {
 	
 	/** creates a .txt file */
 	function boolean create(String name, boolean writing){
