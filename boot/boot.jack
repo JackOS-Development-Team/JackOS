@@ -11,6 +11,7 @@ class boot {
 		do Keyboard.init();
 		do Disk.init();
 		do Sys.init();
+		do Disk.load(131072, 196608, 20440, 85976);
 		do kernel.kernel();
 	
 	}
