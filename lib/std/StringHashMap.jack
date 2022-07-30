@@ -1,0 +1,45 @@
+class StringHashMap {
+
+	field Array KeyArr;
+	field Array ValueArr;
+	field Array current;
+	
+	constructor StringHasMap new(int Keys) {
+		let KeyArr = Array.new(Keys);
+		let ValueArr = Array.new(Keys);
+		let current = 0;
+		return StringHashMap;
+	}
+	
+	method void put(String key, String value) {
+		let KeyArr[current] = key;
+		let ValueArr[current] = value;
+		let current = current + 1;
+	}
+	
+	method String get(String key) {
+		var String temp;
+		var String temp2;
+		var boolean x;
+		var int y;
+		
+		let y = 0;
+		let x = true;
+		let temp2 = String.new(256);
+		let temp = String.new(256);
+		do temp2.appendString(key);
+		while (x) {
+			do temp.appendString(KeyArr[x]);
+			if (String.compare(temp, temp2) == true) {
+				let x = false;
+			}
+			else {
+				let y = y + 1;
+			}
+		do temp.dispose();
+		do temp2.dispose();
+		return ValueArr[y];
+		}
+	}
+	
+}
