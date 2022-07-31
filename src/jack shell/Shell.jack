@@ -191,7 +191,7 @@ class Shell {
 				do Process.exec(lower1);
 			}
 			if (String.compare(upper, "about") == 0) {
-				do Output.printString("You are using the official JackOS V3");
+				do Output.printString("You are using the official JackOS 1.0.0-rc5");
 			}
 			if (String.compare(upper, "cls") == 0) {
 				do Screen.clearScreen();
