@@ -1,0 +1,157 @@
+class Assembler {
+
+	static String fname;
+	static IntHashMap mnemonics;
+	static Array data;
+
+	function void init() {
+			let mnemonics = IntHashMap.new(64);
+			let fname = String.new(16);
+			let data = Array.new(4000);
+			do mnemonics.put("NOP", 0);
+			do mnemonics.put("LDA", 1);
+			do mnemonics.put("STA", 2);
+			do mnemonics.put("LDI", 3);
+			do mnemonics.put("ADD", 4);
+			do mnemonics.put("SUB", 5);
+			do mnemonics.put("AND", 6);
+			do mnemonics.put("OR", 7);
+			do mnemonics.put("NOT", 8);
+			do mnemonics.put("XOR", 9);
+			do mnemonics.put("JMP", 10);
+			do mnemonics.put("JGT", 11);
+			do mnemonics.put("JLT", 12);
+			do mnemonics.put("CMP", 13);
+			
+	}
+
+	function void main() {
+		do fname.appendString(Keyboard.readLine("Which file do you want to assemble? "));
+		let data = AsmFile.print(fname);
+		do Screen.clearScreen();
+		do Output.printString("Assembling...");
+		let data = assemble(data);
+		do BinFile.create("out.bin", true);
+		do BinFile.write("out.bin", data);
+		do fname.dispose();
+		do data.dispose();
+		do mnemonics.dispose();
+		do Output.printString("Done. New file 'out.bin'. Please rename to prevent filesystem quirks");
+		return;
+	}
+	
+	function Array assemble(Array source) {
+		var String temp;
+		var boolean running;
+		var String upper;
+		var String lower1;
+		var String lower2;;
+		var int upperint;
+		var int lower1int;
+		var int lower2int;
+		var int lower3int;
+		var boolean parsingCommand
+		var boolean parsingInput1;
+		var boolean parsingInput2;
+		var boolean parsingInput3;
+		var int i;
+		var boolean noInput1;
+		var boolean noInput2;
+		var boolean noInput3;
+		var String temp2;
+		var int current;
+		var Array binary;
+		var int x;
+		var int helper;
+		
+		let helper= 0;
+		let binary = Array.new(4000);
+		let current = 0;
+		var String src;
+		let src = Array.new(16000);
+		let src = source;
+		
+		let noInput1 = false;
+		let noInput2 = false;
+		let noInput3 = false;
+		let i = 0;
+		let temp2 = String.new(64);
+		let parsingCommand = true;
+		let parsingInput1 = true;
+		let parsingInput2 = true;
+		let parsingInput3 = true;
+		let lower1 = String.new(32);
+		let lower2 = String.new(32);
+		let upper = String.new(32);
+		let lower1int = 0;
+		let lower2int = 0;
+		let lower3int = 0;
+		let upperint = 0;
+		let temp = String.new(128);
+		let running = true;
+		
+		while (running) {
+			do temp.appendString(source);
+			while (~(temp.charAt(current) == 10)) {
+				do temp2.appendChar(temp.charAt(current);
+				let current = current + 1;
+				if (temp2 == 23) {
+					return binary;
+				}
+			}
+			
+			let i = 0;
+			while (i <= 3) {
+				do upper.appendChar(temp2.charAt(i));
+				let i = i + 1;
+			}
+			
+			let upperint = mnemonics.compare(upper);
+			
+			//error checking
+			if (upperint == -1) {
+				do Output.printString("Error: Assembly Command Not Found");
+				return;
+			}
+			
+			//checking for input
+			if (temp2.charAt(i + 1) == null) {
+				let binary[helper] = upperint;
+				let helper = helper + 1;
+			}
+			
+			//parse inputs
+			let x = i + 1;
+			while (~(lower1.charAt(i) == 32 || lower1.charAt(i) == 44) {
+				let lower1.appendChar(temp2.charAt(x));
+				let x = x + 1;
+			}
+			
+			let lower1int = intValue(lower1);
+			
+			
+			let x = x + 1;
+			while (~(lower2.charAt(i) == 32 || lower2.charAt(i) == 44) {
+				let lower2.appendChar(temp2.charAt(x));
+				let x = x + 1;
+			}
+			
+			let lower2int = intValue(lower2);
+			
+			let binary[helper] = upperint;
+			let helper = helper + 1;
+			let binary[helper] = lower1intint;
+			let helper = helper + 1;
+			let binary[helper] = lower2int;
+			let helper = helper + 1;
+		}
+		
+		do temp.dispose();
+		do temp2.dispose();
+		do lower1.dispose();
+		do lower2.dispose();
+		do binary.dispose();
+		return;
+	}
+}
+// EOF

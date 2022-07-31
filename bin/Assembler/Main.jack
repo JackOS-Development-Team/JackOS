@@ -1,0 +1,1 @@
+class Main {	function void Main() {		do Assembler.main();	}}
